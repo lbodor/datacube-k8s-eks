@@ -67,3 +67,11 @@ output "database_subnets" {
 output "private_subnets" {
   value = module.vpc.private_subnets
 }
+
+output "default_network_acl_id" {
+  value = module.vpc.default_network_acl_id
+}
+
+output "default_route_table_id" {
+  value = module.vpc.default_route_table_id
+}
