@@ -20,7 +20,6 @@ resource "aws_autoscaling_group" "nodes" {
   dynamic "tag" {
     for_each = merge(
       {
-        Name        = "${var.node_group_name}-${aws_launch_template.node.id}-nodes"
         environment = var.environment
         namespace   = var.namespace
         owner       = var.owner
