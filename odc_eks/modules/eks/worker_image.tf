@@ -82,6 +82,21 @@ resource "aws_launch_template" "node" {
     }
   }
 
+  tag_specifications {
+    resource_type = "instance"
+
+    tags = {
+      Name = "${aws_eks_cluster.eks.id}-default"
+    }
+  }
+
+  tag_specifications {
+    resource_type = "volume"
+
+    tags = {
+      Name = "${aws_eks_cluster.eks.id}-default"
+    }
+  }
 }
 
 resource "aws_launch_template" "spot" {
@@ -128,6 +143,4 @@ resource "aws_launch_template" "spot" {
       volume_type = var.volume_type != "" ? var.volume_type : null
     }
   }
-
 }
-
