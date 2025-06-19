@@ -41,8 +41,7 @@ variable "user_additional_policy_arn" {
 
 # Worker variables
 variable "ami_image_id" {
-  default     = ""
-  description = "Overwrites the default ami (latest Amazon EKS)"
+  description = "Node group AMI"
 }
 
 variable "node_group_name" {

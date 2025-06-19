@@ -1,22 +1,9 @@
-data "aws_ami" "eks_worker" {
-  filter {
-    name   = "name"
-    values = ["amazon-eks-node-${aws_eks_cluster.eks.version}-v*"]
-  }
-
-  most_recent = true
-  owners      = ["602401143452", "877085696533"] # Amazon EKS AMI Account ID
-}
-
 # EKS currently documents this required userdata for EKS worker nodes to
 # properly configure Kubernetes applications on the EC2 instance.
 # We utilize a Terraform local here to simplify Base64 encoding this
 # information into the AutoScaling Launch Template.
 # More information: https://docs.aws.amazon.com/eks/latest/userguide/launch-workers.html
 locals {
-  # return first non-empty value
-  ami_id = coalesce(var.ami_image_id, data.aws_ami.eks_worker.id)
-
   eks-node-userdata = <<USERDATA
 #!/bin/bash
 set -o xtrace
@@ -47,7 +34,7 @@ USERDATA
 
 resource "aws_launch_template" "node" {
   name_prefix   = aws_eks_cluster.eks.id
-  image_id      = local.ami_id
+  image_id      = var.ami_image_id
   user_data     = base64encode(local.eks-node-userdata)
   instance_type = var.default_worker_instance_type
 
@@ -102,7 +89,7 @@ resource "aws_launch_template" "node" {
 resource "aws_launch_template" "spot" {
   count         = var.spot_nodes_enabled ? 1 : 0
   name_prefix   = aws_eks_cluster.eks.id
-  image_id      = local.ami_id
+  image_id      = var.ami_image_id
   user_data     = base64encode(local.eks-spot-userdata)
   instance_type = var.default_worker_instance_type
 
