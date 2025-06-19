@@ -43,7 +43,7 @@ output "cluster_id" {
 }
 
 output "ami_image_id" {
-  value = local.ami_id
+  value = var.ami_image_id
 }
 
 output "node_asg_names" {
