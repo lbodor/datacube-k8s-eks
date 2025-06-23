@@ -5,16 +5,18 @@
 # More information: https://docs.aws.amazon.com/eks/latest/userguide/launch-workers.html
 locals {
   eks-node-userdata = <<USERDATA
-#!/bin/bash
-set -o xtrace
-# Get instance and ami id from the aws ec2 metadate endpoint
-id=$(curl http://169.254.169.254/latest/meta-data/instance-id -s)
-ami=$(curl http://169.254.169.254/latest/meta-data/ami-id -s)
-/etc/eks/bootstrap.sh --apiserver-endpoint '${aws_eks_cluster.eks.endpoint}' --b64-cluster-ca '${aws_eks_cluster.eks.certificate_authority[0].data}' '${aws_eks_cluster.eks.id}' ${var.extra_bootstrap_args} \
---kubelet-extra-args \
-  "--node-labels=cluster=${aws_eks_cluster.eks.id},nodegroup=${var.node_group_name},nodetype=ondemand,instance-id=$id,ami-id=$ami \
-   ${var.extra_kubelet_args}"
-${var.extra_userdata}
+---
+apiVersion: node.eks.aws/v1alpha1
+kind: NodeConfig
+spec:
+  cluster:
+    name: ${aws_eks_cluster.eks.name}
+    apiServerEndpoint: ${aws_eks_cluster.eks.endpoint}
+    certificateAuthority: ${aws_eks_cluster.eks.certificate_authority[0].data}
+    cidr: ${aws_eks_cluster.eks.kubernetes_network_config[0].service_ipv4_cidr}
+  kubelet:
+    flags:
+      - --node-labels=nodegroup=${var.node_group_name},nodetype=ondemand
 USERDATA
 
   eks-spot-userdata = <<USERDATA
