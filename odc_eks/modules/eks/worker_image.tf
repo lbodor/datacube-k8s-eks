@@ -5,6 +5,12 @@
 # More information: https://docs.aws.amazon.com/eks/latest/userguide/launch-workers.html
 locals {
   eks-node-userdata = <<USERDATA
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="BOUNDARY"
+
+--BOUNDARY
+Content-Type: application/node.eks.aws
+
 ---
 apiVersion: node.eks.aws/v1alpha1
 kind: NodeConfig
@@ -17,6 +23,9 @@ spec:
   kubelet:
     flags:
       - --node-labels=nodegroup=${var.node_group_name},nodetype=ondemand
+
+-- BOUNDARY
+${var.extra_userdata}
 USERDATA
 
   eks-spot-userdata = <<USERDATA
