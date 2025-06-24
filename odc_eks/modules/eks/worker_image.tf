@@ -24,8 +24,10 @@ spec:
     flags:
       - --node-labels=nodegroup=${var.node_group_name},nodetype=ondemand
 
--- BOUNDARY
+--BOUNDARY
 ${var.extra_userdata}
+
+--BOUNDARY--
 USERDATA
 
   eks-spot-userdata = <<USERDATA
