@@ -27,33 +27,6 @@ resource "aws_iam_role" "eks_node" {
   )
 }
 
-resource "aws_iam_policy" "eks_kube2iam" {
-  name        = "${var.cluster_id}-kube2iam"
-  path        = "/"
-  description = "Enables Kube2iam to assume roles"
-
-  policy = <<-EOF
-    {
-      "Version": "2012-10-17",
-      "Statement": [
-        {
-          "Action": [
-            "sts:AssumeRole"
-          ],
-          "Effect": "Allow",
-          "Resource": "*"
-        }
-      ]
-    }
-  EOF
-
-}
-
-resource "aws_iam_role_policy_attachment" "eks_node_kube2iam" {
-  policy_arn = aws_iam_policy.eks_kube2iam.arn
-  role       = aws_iam_role.eks_node.name
-}
-
 resource "aws_iam_role_policy_attachment" "eks_node_AmazonEKSWorkerNodePolicy" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy"
   role       = aws_iam_role.eks_node.name
